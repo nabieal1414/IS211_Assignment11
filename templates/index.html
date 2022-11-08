@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block title %}Todo List{% endblock %}
+
+{% block content %} 
+<div class="row">
+<div class="col-12">
+    <div class="row">
+      <div class="col"><h1>Todo List</h1></div>
+      <div>
+        <form action="/clear" method="POST">
+          <button type="submit" class="btn btn-dark">Clear Todos</button>
+        </form>
+      </div>
+    </div>
+  
+    <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Task</th>
+            <th>Email</th>
+            <th>Priority</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for todo in todos %}
+          <tr>
+            {% for key, value in todo.items() %}
+              {% if key == 'priority' and value == 'low' %}
+              <td class="text-info"> {{ value }} </td>
+              {%elif key == 'priority' and value == 'medium'%}
+              <td class="text-success"> {{ value }} </td>
+              {%elif key == 'priority' and value == 'high'%}
+              <td class="text-danger">{{ value }}</td>
+              {% else %}
+              <td>{{ value }}</td>
+              {% endif %}
+            {% endfor %}
+            <td>
+              <form action="/delete/{{todo.id}}" method="POST">
+                <button class="btn btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <hr>
+      <div class="col-12">
+        <h1>Add Todo</h1>
+        <form action="/submit" method="POST">
+            <div class="form-group">
+                <label for="task" class="form-label">Task</label>
+                <input type="text" id="task" name="task" class="form-control" placeholder="Enter task">
+                <span class="text-danger" id="task-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="text" id="email" name="email" class="form-control" placeholder="Enter email">
+                <span class="text-danger" id="email-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="priority" class="form-label">Priority</label>
+                <select name="priority" id="priority" class="form-control">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary m-auto">Add To Do Item</button>
+        </form>
+    </div>
+  </div>
+
+  <script>
+    const queryString = window.location.search;
+    const parameters = new URLSearchParams(queryString);
+    const value = parameters.get('error');
+    const errors = value.split(',')
+    errors.forEach((error) => {
+      if(error.includes('Task')) {
+        document.getElementById("task-error").textContent=error
+      }
+      if(error.includes('Email')){
+        document.getElementById("email-error").textContent=error
+      }
+    })
+    
+  </script>
+{% endblock %}
